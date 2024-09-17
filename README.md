@@ -1,4 +1,5 @@
-# A simple visualizer for the mandelbrot set
+# mandelbrot-renderer
+A simple application to render images of the Mandelbrot set
 
 ### Overview
 
