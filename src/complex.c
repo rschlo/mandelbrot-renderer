@@ -36,22 +36,26 @@ int magnitude(Complex c, double *p_result) {
  * Note that there can't be an overflow because of the ESCAPE_RADIUS.
  */
 int iterate_squence(Complex c, size_t n_max, size_t *p_iterations) {
+    if (n_max == 0) {
+        // The maximum number of iterations must be greater than 0.
+        // Otherwise the sequence would not be iterated.
+        return ERROR;
+    }
+
     Complex z = {0.0, 0.0};
     double magnitude_z;
-    // n is the number of iterations for which the sequence remains within the ESCAPE_RADIUS.
-    // z_{n+1} is the first term of the sequence that exceeds the ESCAPE_RADIUS.
-    size_t n = 0;
+    size_t iteration_count = 0;
 
-    while (n < n_max) {
+    while (iteration_count < n_max) {
         multiply(z, z, &z);
         add(z, c, &z);
         magnitude(z, &magnitude_z);
         if (magnitude_z > ESCAPE_RADIUS) {
             break;
         }
-        n++;
+        iteration_count++;
     }
 
-    *p_iterations = n;
+    *p_iterations = iteration_count;
     return SUCCESS;
 }

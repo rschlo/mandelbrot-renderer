@@ -55,11 +55,14 @@ int magnitude(Complex c, double *p_result);
 
 /**
  * Iterates the Mandelbrot function for a given complex number c.
- * The function returns the number of iterations needed to escape the ESCAPE_RADIUS or n_max if the number of iterations exceeds n_max.
+ * z_0 = 0, z_1 = z_0^2 + c = c, z_2 = z_1^2 + c, ...
+ * The function stores the number of iterations for which the Mandelbrot function remained within the ESCAPE_RADIUS in p_iterations.
+ * For example, if |z_5| <= 2 but |z_6| > ESCAPE_RADIUS, p_iterations will be set to 5. Because of z_0 = 0, the minimum value for p_iterations is 0.
+ * If the algorithm reaches z_{n_max} and |z_{n_max}| <= ESCAPE_RADIUS, p_iterations will be set to n_max and the function will stop.
  *
  * @param c The complex number for which the Mandelbrot function should be iterated.
- * @param n_max The maximum number of iterations.
- * @param p_iterations A pointer to store the number of iterations needed to escape the ESCAPE_RADIUS.
+ * @param n_max The maximum number of iterations. Must be greater than 0.
+ * @param p_iterations A pointer to store the number of iterations for which the mandelbrot function remained within the ESCAPE_RADIUS.
  * @return Status code.
  */
 int iterate_squence(Complex c, size_t n_max, size_t *p_iterations);

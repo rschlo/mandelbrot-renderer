@@ -1,5 +1,6 @@
 #include "../include/colors.h"
 
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,15 +9,15 @@
 #include "../include/parser.h"
 
 uint8_t get_red(uint32_t color) {
-    return (color & 0xFF0000) >> 16;  // Rot
+    return (color & 0xFF0000) >> 16;
 }
 
 uint8_t get_green(uint32_t color) {
-    return (color & 0xFF00) >> 8;  // Grün
+    return (color & 0xFF00) >> 8;
 }
 
 uint8_t get_blue(uint32_t color) {
-    return (color & 0xFF);  // Blau
+    return (color & 0xFF);
 }
 
 uint32_t rgb_to_uint32(uint8_t red, uint8_t green, uint8_t blue) {
@@ -24,6 +25,21 @@ uint32_t rgb_to_uint32(uint8_t red, uint8_t green, uint8_t blue) {
     color = (color << 8) + green;
     color = (color << 8) + blue;
     return color;
+}
+
+/**
+ * Interpolates between two colors. The result is stored in p_result.
+ *
+ * @param start_color The start color.
+ * @param end_color The end color.
+ * @param t The progress between the start and end color. Must be between 0 and 1.
+ * @param p_result A pointer to store the result.
+ */
+void _interpolate(uint32_t start_color, uint32_t end_color, double t, uint32_t *p_result) {
+    uint8_t red = (uint8_t)(get_red(start_color) + t * (get_red(end_color) - get_red(start_color)));
+    uint8_t green = (uint8_t)(get_green(start_color) + t * (get_green(end_color) - get_green(start_color)));
+    uint8_t blue = (uint8_t)(get_blue(start_color) + t * (get_blue(end_color) - get_blue(start_color)));
+    *p_result = rgb_to_uint32(red, green, blue);
 }
 
 int calculate_color(size_t num_iterations, Configuration settings, uint32_t *result) {
@@ -34,60 +50,46 @@ int calculate_color(size_t num_iterations, Configuration settings, uint32_t *res
 
     // If the number of iterations is greater than the maximum number of iterations, return an error
     if (num_iterations > n_max) {
-        return ERROR;
+        return ERROR_INVALID_NUM_ITERATIONS;
     }
     // If there are no outer colors, return an error
     if (num_outer_colors < 1) {
-        return ERROR;
+        return ERROR_NO_OUTER_COLORS;
     }
     // If the maximum number of iterations is 0, return an error
     if (n_max == 0) {
-        return ERROR;
+        return ERROR_INVALID_N_MAX;
+    }
+    // there are not enough different values for num_iterations to map to the outer colors. We don't know which color to dismiss?
+    if (num_outer_colors > n_max) {
+        return ERROR_TOO_MANY_OUTER_COLORS;
     }
 
-    // 
+    // If number of iterations equals n_max, assume the point is in the Mandelbrot set and return the inner color.
     if (num_iterations == n_max) {
         *result = inner_color;
-        return SUCCESS;  // Rückgabe der inneren Farbe, wenn der Index ungültig ist
+        return SUCCESS;
     }
-
-    // Wenn es nur eine Farbe im Gradient gibt, gib diese Farbe für alle Indizes außer dem letzten zurück
-    if (num_outer_colors == 1) {
-        if (num_iterations == n_max - 1) {
-            *result = inner_color;
-            return SUCCESS;
-        } else {
-            *result = outer_colors[0];
-            return SUCCESS;
-        }
-    }
-
-    // Berechne die Anzahl der Segmente
-    size_t segmentSize = n_max / num_outer_colors;
-    size_t segmentIndex = num_iterations / segmentSize;
-
-    if (segmentIndex >= num_outer_colors - 1) {
-        *result = inner_color;  // Gib die innere Farbe zurück, wenn wir am Ende des Farbverlaufs sind
+    // If number of iterations is less than n_max and there is only one outer color, return the outer color
+    if (num_iterations < n_max && num_outer_colors == 1) {
+        *result = outer_colors[0];
         return SUCCESS;
     }
 
-    uint32_t start = outer_colors[segmentIndex];
-    uint32_t end = outer_colors[segmentIndex + 1];
+    // Calculate segment size and segment index. The segment size is the size of the color interval in the number of iterations.
+    // Example: I have 3 outer colors and n_max = 4. Then num_iterions can be 0, 1, 2, 3 (4 is mapped to inner color, see clause above).
+    // We have 2=num_outer_colors-1 color intervals [c1, c2], [c2, c3]. Then we map these intervals to the [0, 1.5], [1.5, 3] in the number of iterations, where 1.5 = (n_max-1)/(num_outer_colors-1).
+    double segment_size = (n_max - 1) / (double)(num_outer_colors - 1);
+    if (isnan(segment_size) || isinf(segment_size)) {
+        return ERROR_OVERFLOW;
+    }
+    size_t segment_index = num_iterations / segment_size;
+    // Calculate the progress within the segment
+    double t = num_iterations / segment_size - segment_index;
 
-    // Berechne den lokalen Index innerhalb des Segments
-    size_t j = num_iterations % segmentSize;
+    uint32_t start_color = outer_colors[segment_index];
+    uint32_t end_color = outer_colors[segment_index + 1];
 
-    // Berechne den Fortschritt innerhalb des Segments
-    double t = (double)j / (segmentSize - 1);
-
-    // Interpoliere die Farben
-    uint8_t red = (uint8_t)(get_red(start) + t * (get_red(end) - get_red(start)));
-    uint8_t green = (uint8_t)(get_green(start) + t * (get_green(end) - get_green(start)));
-    uint8_t blue = (uint8_t)(get_blue(start) + t * (get_blue(end) - get_blue(start)));
-
-    // Erstelle uint32_t Farbe aus den interpolierten RGB-Werten
-    uint32_t color = rgb_to_uint32(red, green, blue);
-
-    *result = color;
+    _interpolate(start_color, end_color, t, result);
     return SUCCESS;
 }

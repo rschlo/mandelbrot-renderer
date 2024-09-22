@@ -89,21 +89,26 @@ int build_image_and_print_progress(ImageSize size, Configuration config, unsigne
     double progress = 0.0;
     double last_progress_output = 0.0;
     process_progress(progress, &last_progress_output);
+    int status = SUCCESS;
 
     for (int x = 0; x < size.width; x++) {
         for (int y = 0; y < size.height; y++) {
-            int status_pixel_conversion = pixelcoord_to_complex(x, y, config.viewport, size, &c);
-            if (status_pixel_conversion < 0) {
-                return ERROR;
+            status = pixelcoord_to_complex(x, y, config.viewport, size, &c);
+            if (status < 0) {
+                return status;
             }
-            iterate_squence(c, config.n_max, &number_iterations);
-            calculate_color(number_iterations, config, &color);
-
-            int status_set_pixel = set_pixel_in_image_data(x, y, size, color, p_image_data);
-            if (status_set_pixel < 0) {
-                return ERROR;
+            status = iterate_squence(c, config.n_max, &number_iterations);
+            if (status < 0) {
+                return status;
             }
-
+            status = calculate_color(number_iterations, config, &color);
+            if (status < 0) {
+                return status;
+            }
+            status = set_pixel_in_image_data(x, y, size, color, p_image_data);
+            if (status < 0) {
+                return status;
+            }
             // Note: Division by zero is not possible here, because size.width is always greater than 0.
             // Otherwise the program would not reach this point.
             progress = (double)x / (double)size.width;
@@ -251,7 +256,7 @@ int main(int argc, char **argv) {
     double build_time;
     int status_build = CPUTIME(build_image_and_print_progress(size, config, p_image_data), &build_time);
     if (status_build < 0) {
-        printf("Error: Could not build image. Please reduce image width. \n");
+        printf("Error: Could not build image. \n");
         return ERROR;
     }
 
