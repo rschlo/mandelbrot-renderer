@@ -2,27 +2,36 @@
 #define PRINTER_H
 
 #include "bitmap.h"
-#include "viewport.h"
 #include "parser.h"
+#include "viewport.h"
 
 #define PROGRESS_BAR_WIDTH 20
 #define PROGRESS_STEP 0.05
 
 /**
- * Prints information about the image building process to the console. 
- * That includes the ini file, the output file, the image size, the maximum number of iterations, the viewport, the inner color, the gradient, the gradient length and the build time.
+ * Prints information about the image building process to the console.
+ * That includes the config path, the output path, the image size, the maximum number of iterations, the viewport, the inner color, the gradient, the gradient length and the build time.
+ *
+ * @param config_path The path to the configuration file.
+ * @param output_path The path to the output file.
+ * @param size The size of the image in pixels.
+ * @param config The configuration struct.
+ * @param build_time The time it took to build the image.
  */
-void print_info(const char *ini_file, const char *output_file, ImageSize size, Configuration config, double build_time);
+void print_info(const char *config_path, const char *output_path, ImageSize size, Configuration config, double build_time);
 
 /**
- * Prints how the program should be used to the console. 
+ * Prints how the program should be used to the console.
+ *
+ * @param program_name The name of the program.
  */
 void print_usage(const char *program_name);
 
 /**
- * Processes the progress of the image building process. 
- * If the progress is greater than the last output plus the progress step, the progress is printed to the console. 
+ * Prints a progress bar to the console. The progress bar is a horizontal bar that shows the progress of a process.
+ *
+ * @param progress The progress of the process. The progress must be between 0 and 1.
  */
-void process_progress(double progress, double *p_last_output);
+void print_progress_bar(double progress);
 
-#endif // PRINTER_H
+#endif  // PRINTER_H

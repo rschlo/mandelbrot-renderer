@@ -42,9 +42,12 @@ int parse_hex(const char *str, uint32_t *p_value) {
 }
 
 /**
- * Removes all spaces from a string.
+ * Removes all spaces from a string. The function modifies the input string.
+ *
+ * @param str The string from which the spaces should be removed.
+ * @return Status code.
  */
-void _remove_spaces(char *str) {
+int _remove_spaces(char *str) {
     char *dest = str;
     while (*str) {
         if (!isspace((unsigned char)*str)) {
@@ -53,8 +56,17 @@ void _remove_spaces(char *str) {
         str++;
     }
     *dest = STR_TERMINATOR;  // Set the null terminator
+    return SUCCESS;
 }
 
+/**
+ * Sets the value for the given key in the configuration struct. Returns an error code if the key is unknown or the value is invalid.
+ *
+ * @param key The key for which the value should be set.
+ * @param value The value to set as string.
+ * @param p_settings Pointer to the configuration struct that should be modified.
+ * @return Status code.
+ */
 int _set_value(char *key, char *value, Configuration *p_settings) {
     int status = SUCCESS;
     if (strcmp(key, "n_max") == EQUAL) {
@@ -70,7 +82,7 @@ int _set_value(char *key, char *value, Configuration *p_settings) {
     } else if (strcmp(key, "inner_color") == EQUAL) {
         status = parse_hex(value, &p_settings->inner_color);
     } else if (strcmp(key, "outer_colors") == EQUAL) {
-        // Teile die Werte durch Kommas
+        // Parse the outer colors as an array
         char *token = strtok(value, ARRAY_SEPERATOR_STR);
         size_t index = 0;
         while (status == SUCCESS && token != NULL && index < MAX_ARRAY_SIZE) {
@@ -78,13 +90,22 @@ int _set_value(char *key, char *value, Configuration *p_settings) {
             token = strtok(NULL, ARRAY_SEPERATOR_STR);
             index++;
         }
-        p_settings->num_outer_colors = index;  // Setze die tatsächliche Größe des Arrays
+        p_settings->num_outer_colors = index;  // Set the actual number of outer colors
+    } else {
+        return ERROR;
     }
+    // Return error code if the value could not be parsed
     if (status < 0) {
         return ERROR;
     }
 }
 
+/**
+ * Checks if the given line is a comment line. A comment line starts with a char from the COMMENT_CHARS array.
+ *
+ * @param line The line to check.
+ * @return True if the line is a comment line, false otherwise.
+ */
 bool _is_comment_line(char *line) {
     int comment_chars[NUM_COMMENT_CHARS] = COMMENT_CHARS;
     for (int i = 0; i < NUM_COMMENT_CHARS; i++) {
@@ -95,8 +116,8 @@ bool _is_comment_line(char *line) {
     return false;
 }
 
-int parse_ini_file(const char *filename, Configuration *p_config) {
-    FILE *file = fopen(filename, "r");
+int parse_ini_file(const char *path, Configuration *p_config) {
+    FILE *file = fopen(path, "r");
     if (file == NULL) {
         return ERROR_FILE_NOT_FOUND;
     }
@@ -113,7 +134,7 @@ int parse_ini_file(const char *filename, Configuration *p_config) {
             continue;
         }
 
-        // strchr expects a char but strtok expects a *char (string).
+        // Note that strchr expects a char but strtok expects a *char (string).
         if (strchr(line, KEY_VALUE_SEPARATOR_STR[0])) {
             // Seperate the line into key and value
             char *key = strtok(line, KEY_VALUE_SEPARATOR_STR);

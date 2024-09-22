@@ -28,38 +28,51 @@ uint32_t rgb_to_uint32(uint8_t red, uint8_t green, uint8_t blue) {
 
 int calculate_color(size_t num_iterations, Configuration settings, uint32_t *result) {
     uint32_t inner_color = settings.inner_color;
-    uint32_t *gradient = settings.outer_colors;
-    size_t gradient_length = settings.num_outer_colors;
+    uint32_t *outer_colors = settings.outer_colors;
+    size_t num_outer_colors = settings.num_outer_colors;
     size_t n_max = settings.n_max;
 
-    // Überprüfe, ob der Index im gültigen Bereich liegt
-    if (num_iterations >= n_max) {
+    // If the number of iterations is greater than the maximum number of iterations, return an error
+    if (num_iterations > n_max) {
+        return ERROR;
+    }
+    // If there are no outer colors, return an error
+    if (num_outer_colors < 1) {
+        return ERROR;
+    }
+    // If the maximum number of iterations is 0, return an error
+    if (n_max == 0) {
+        return ERROR;
+    }
+
+    // 
+    if (num_iterations == n_max) {
         *result = inner_color;
         return SUCCESS;  // Rückgabe der inneren Farbe, wenn der Index ungültig ist
     }
 
     // Wenn es nur eine Farbe im Gradient gibt, gib diese Farbe für alle Indizes außer dem letzten zurück
-    if (gradient_length == 1) {
+    if (num_outer_colors == 1) {
         if (num_iterations == n_max - 1) {
             *result = inner_color;
             return SUCCESS;
         } else {
-            *result = gradient[0];
+            *result = outer_colors[0];
             return SUCCESS;
         }
     }
 
     // Berechne die Anzahl der Segmente
-    size_t segmentSize = n_max / gradient_length;
+    size_t segmentSize = n_max / num_outer_colors;
     size_t segmentIndex = num_iterations / segmentSize;
 
-    if (segmentIndex >= gradient_length - 1) {
+    if (segmentIndex >= num_outer_colors - 1) {
         *result = inner_color;  // Gib die innere Farbe zurück, wenn wir am Ende des Farbverlaufs sind
         return SUCCESS;
     }
 
-    uint32_t start = gradient[segmentIndex];
-    uint32_t end = gradient[segmentIndex + 1];
+    uint32_t start = outer_colors[segmentIndex];
+    uint32_t end = outer_colors[segmentIndex + 1];
 
     // Berechne den lokalen Index innerhalb des Segments
     size_t j = num_iterations % segmentSize;

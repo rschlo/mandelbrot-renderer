@@ -19,7 +19,7 @@ int set_pixel_in_image_data(size_t x, size_t y, ImageSize size, uint32_t color, 
     return SUCCESS;
 }
 
-int saveBMP(const char *filename, ImageSize size, unsigned char *image_data) {
+int saveBMP(const char *output_path, ImageSize size, unsigned char *image_data) {
     BITMAPFILEHEADER file_header;
     BITMAPINFOHEADER info_header;
 
@@ -52,7 +52,7 @@ int saveBMP(const char *filename, ImageSize size, unsigned char *image_data) {
     info_header.biClrUsed = 0;
     info_header.biClrImportant = 0;
 
-    FILE *file = fopen(filename, "wb");
+    FILE *file = fopen(output_path, "wb");
     if (!file) {
         return ERROR_FILE_OPEN;
     }
