@@ -13,10 +13,10 @@
 #include "..\include\viewport.h"
 
 #define ERROR_WHILE_EXPORT -3
-#define WARNING_IMAGE_SIZE_0 2
 #define ARG_POS_CONFIG_PATH 1
 #define ARG_POS_WIDTH 2
 #define ARG_POS_OUTPUT_PATH 3
+#define EXTENSION ".bmp"
 
 // This is a macro to measure the time of a function call.
 // It returns the return value of the function call. The time is stored in the variable TIME_PTR.
@@ -27,32 +27,6 @@
         *(TIME_PTR) = ((double)clock() - START) / CLOCKS_PER_SEC; \
         return_value;                                             \
     })
-
-/**
- * Mallocs memory for the image data.
- * Prints an error message if the memory allocation fails.
- * This function is free of overflow errors.
- *
- * @param size The size of the image in pixels.
- * @param p_p_image_data A pointer to the pointer where the image data should be stored.
- * @return Status code.
- */
-int malloc_image_data(ImageSize size, unsigned char **p_p_image_data) {
-    if (size.width == 0 || size.height == 0) {
-        return WARNING_IMAGE_SIZE_0;
-    }
-    if (size.width > SIZE_MAX / 3 || 3 * size.width > SIZE_MAX / size.height) {
-        return ERROR_OVERFLOW;
-    }
-    size_t malloc_size = size.width * size.height * 3;
-
-    unsigned char *p_memory = (unsigned char *)malloc(malloc_size);
-    if (p_memory == NULL) {
-        return ERROR_MEM_ALLOC;
-    }
-    *p_p_image_data = p_memory;
-    return SUCCESS;
-}
 
 /**
  * Processes the progress of the image building process.
@@ -201,8 +175,6 @@ int calc_image_size(size_t width, Viewport viewport, ImageSize *size) {
     return SUCCESS;
 }
 
-const char EXTENSION[] = ".bmp";
-
 /**
  * Main function of the program.
  * Parses the command line arguments, the ini file and the width of the image.
@@ -268,7 +240,6 @@ int main(int argc, char **argv) {
         printf("Error: Could not save image\n");
         return ERROR;
     }
-
     printf("Image saved at \"%s\"\n", output_path);
 
     // Print info

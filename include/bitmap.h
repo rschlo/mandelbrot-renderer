@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define ERROR_FILE_OPEN -1
+#define WARNING_IMAGE_SIZE_0 2
 
 /**
  * Represents the size of an image.
@@ -73,5 +74,14 @@ int saveBMP(const char *output_path, ImageSize size, unsigned char *image_data);
  * @return Status code.
  */
 int set_pixel_in_image_data(size_t x, size_t y, ImageSize size, uint32_t color, unsigned char *p_image_data);
+
+/**
+ * Mallocs memory for the image data.
+ *
+ * @param size The size of the image in pixels.
+ * @param p_p_image_data A pointer to the pointer where the image data should be stored.
+ * @return Status code.
+ */
+int malloc_image_data(ImageSize size, unsigned char **p_p_image_data);
 
 #endif  // BITMAP_H

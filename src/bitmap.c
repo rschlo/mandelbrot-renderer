@@ -68,3 +68,20 @@ int saveBMP(const char *output_path, ImageSize size, unsigned char *image_data) 
     fclose(file);
     return SUCCESS;
 }
+
+int malloc_image_data(ImageSize size, unsigned char **p_p_image_data) {
+    if (size.width == 0 || size.height == 0) {
+        return WARNING_IMAGE_SIZE_0;
+    }
+    if (size.width > SIZE_MAX / 3 || 3 * size.width > SIZE_MAX / size.height) {
+        return ERROR_OVERFLOW;
+    }
+    size_t malloc_size = size.width * size.height * 3;
+
+    unsigned char *p_memory = (unsigned char *)malloc(malloc_size);
+    if (p_memory == NULL) {
+        return ERROR_MEM_ALLOC;
+    }
+    *p_p_image_data = p_memory;
+    return SUCCESS;
+}
