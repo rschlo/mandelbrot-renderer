@@ -20,45 +20,44 @@ int set_pixel_in_image_data(size_t x, size_t y, ImageSize size, uint32_t color, 
 }
 
 int saveBMP(const char *output_path, ImageSize size, unsigned char *image_data) {
-    BITMAPFILEHEADER file_header;
-    BITMAPINFOHEADER info_header;
+    BitmapFileHeader file_header;
+    BitmapInfoHeader info_header;
 
     if (size.width > SIZE_MAX / 3 || 3 * size.width > SIZE_MAX / size.height) {
         return ERROR_OVERFLOW;
     }
 
-    int image_size = size.width * size.height * 3;  // 3 Bytes pro Pixel (RGB)
+    int image_size = size.width * size.height * 3;  // 3 bytes per pixel (RGB)
+    file_header.type = 0x4D42;                      // "BM" in hex
 
-    file_header.bfType = 0x4D42;  // "BM" in hex
-
-    if (image_size > SIZE_MAX - sizeof(BITMAPFILEHEADER) - sizeof(BITMAPINFOHEADER)) {
+    if (image_size > SIZE_MAX - sizeof(BitmapFileHeader) - sizeof(BitmapInfoHeader)) {
         return ERROR_OVERFLOW;
     }
 
-    file_header.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + image_size;
-    file_header.bfReserved1 = 0;
-    file_header.bfReserved2 = 0;
-    file_header.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+    file_header.size = sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + image_size;
+    file_header.reserved1 = 0;
+    file_header.reserved2 = 0;
+    file_header.offset_bits = sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader);
 
-    info_header.biSize = sizeof(BITMAPINFOHEADER);
-    info_header.biWidth = size.width;
-    info_header.biHeight = size.height;
-    info_header.biPlanes = 1;
-    info_header.biBitCount = 24;    // 24 Bit (RGB)
-    info_header.biCompression = 0;  // Keine Kompression
-    info_header.biSizeImage = image_size;
-    info_header.biXPelsPerMeter = 0;
-    info_header.biYPelsPerMeter = 0;
-    info_header.biClrUsed = 0;
-    info_header.biClrImportant = 0;
+    info_header.header_size = sizeof(BitmapInfoHeader);
+    info_header.width = size.width;
+    info_header.height = size.height;
+    info_header.num_planes = 1;
+    info_header.bits_per_pixel = 24;  // 24 bit (RGB)
+    info_header.compression = 0;      // No compression
+    info_header.image_size = image_size;
+    info_header.pixels_per_meter_x = 0;
+    info_header.pixels_per_meter_y = 0;
+    info_header.num_colors = 0;
+    info_header.num_important_colors = 0;
 
     FILE *file = fopen(output_path, "wb");
     if (!file) {
         return ERROR_FILE_OPEN;
     }
 
-    fwrite(&file_header, sizeof(BITMAPFILEHEADER), 1, file);
-    fwrite(&info_header, sizeof(BITMAPINFOHEADER), 1, file);
+    fwrite(&file_header, sizeof(BitmapFileHeader), 1, file);
+    fwrite(&info_header, sizeof(BitmapInfoHeader), 1, file);
 
     // This works without overflow because of the checks above (size.width * size.height * 3 <= SIZE_MAX)
     for (int y = size.height - 1; y >= 0; y--) {
