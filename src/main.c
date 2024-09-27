@@ -4,15 +4,14 @@
 #include <string.h>
 #include <sys/time.h>
 
-#include "..\include\bitmap.h"
+#include "..\include\image.h"
 #include "..\include\codes.h"
 #include "..\include\colors.h"
 #include "..\include\complex.h"
 #include "..\include\parser.h"
 #include "..\include\printer.h"
-#include "..\include\viewport.h"
+#include "..\include\transform.h"
 
-#define ERROR_WHILE_EXPORT -3
 #define ARG_POS_CONFIG_PATH 1
 #define ARG_POS_WIDTH 2
 #define ARG_POS_OUTPUT_PATH 3
@@ -109,70 +108,17 @@ int generate_valid_path(char *incomplete_path, const char *extension, char **res
     if (strlen(incomplete_path) < extension_length || strcmp(incomplete_path + incomplete_path_length - extension_length, extension) != 0) {
         *result = malloc(incomplete_path_length + extension_length + 1);
         if (*result == NULL) {
-            return ERROR_MEM_ALLOC;
+            return ERROR_MEMORY;
         }
         strcpy(*result, incomplete_path);
         strcat(*result, extension);
     } else {
         *result = malloc(incomplete_path_length + 1);
         if (*result == NULL) {
-            return ERROR_MEM_ALLOC;
+            return ERROR_MEMORY;
         }
         strcpy(*result, incomplete_path);
     }
-}
-
-/**
- * Saves the image data to a file and frees the memory.
- *
- * @param p_image_data The image data to save.
- * @param size The size of the image.
- * @param output_path The path to save the image to.
- */
-int export_and_free(unsigned char *p_image_data, ImageSize size, const char *output_path) {
-    int status_export = saveBMP(output_path, size, p_image_data);
-    if (status_export < 0) {
-        return ERROR_WHILE_EXPORT;
-    }
-    free(p_image_data);
-    return SUCCESS;
-}
-
-/**
- * Calculates the image size based on the width and the viewport.
- * It keeps the aspect ratio and calculates the height.
- * Every possible overflow has been checked.
- *
- * @param width The width of the image in pixels
- * @param viewport The viewport of the complex plane
- * @param size The pointer to store the calculated image size
- * @return Status code
- */
-int calc_image_size(size_t width, Viewport viewport, ImageSize *size) {
-    if (viewport.upper_right.real == viewport.lower_left.real ||
-        viewport.upper_right.imag == viewport.lower_left.imag) {
-        return ERROR_INVALID_VIEWPORT;
-    }
-
-    size->width = width;
-    double viewport_width = fabs(viewport.upper_right.real - viewport.lower_left.real);
-    double viewport_height = fabs(viewport.upper_right.imag - viewport.lower_left.imag);
-
-    if (viewport_width < 1 && viewport_height > SIZE_MAX * viewport_width) {
-        return ERROR_OVERFLOW;
-    }
-    double aspect_ratio = viewport_height / viewport_width;
-
-    if (size->width > SIZE_MAX / aspect_ratio) {
-        return ERROR_OVERFLOW;
-    }
-    size->height = (size_t)(width * aspect_ratio);
-
-    if (size->width == 0 || size->height == 0) {
-        return WARNING_IMAGE_SIZE_0;
-    }
-
-    return SUCCESS;
 }
 
 /**
@@ -210,7 +156,7 @@ int main(int argc, char **argv) {
 
     // Calculate image size
     ImageSize size;
-    int status_size_calc = calc_image_size(image_width, config.viewport, &size);
+    int status_size_calc = viewport_to_image_size(config.viewport, image_width, &size);
     if (status_size_calc < 0) {
         printf("Error: Could not calculate image size\n");
         return ERROR;

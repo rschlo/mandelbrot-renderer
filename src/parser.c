@@ -6,8 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "..\include\codes.h"
-
 #define KEY_VALUE_SEPARATOR_STR "="
 #define NUM_COMMENT_CHARS 2
 #define COMMENT_CHARS {'#', ';'}
@@ -119,7 +117,7 @@ bool _is_comment_line(char *line) {
 int parse_ini_file(const char *path, Configuration *p_config) {
     FILE *file = fopen(path, "r");
     if (file == NULL) {
-        return ERROR_FILE_NOT_FOUND;
+        return ERROR_PARSER_FILE_NOT_FOUND;
     }
 
     char line[MAX_LINE_LENGTH];

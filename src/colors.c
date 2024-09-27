@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../include/codes.h"
-#include "../include/parser.h"
 
 uint8_t get_red(uint32_t color) {
     return (color & 0xFF0000) >> 16;
@@ -50,19 +48,19 @@ int calculate_color(size_t num_iterations, Configuration settings, uint32_t *res
 
     // If the number of iterations is greater than the maximum number of iterations, return an error
     if (num_iterations > n_max) {
-        return ERROR_INVALID_NUM_ITERATIONS;
+        return ERROR_COLORS_INVALID_NUM_ITERATIONS;
     }
     // If there are no outer colors, return an error
     if (num_outer_colors < 1) {
-        return ERROR_NO_OUTER_COLORS;
+        return ERROR_COLORS_NO_OUTER_COLORS;
     }
     // If the maximum number of iterations is 0, return an error
     if (n_max == 0) {
-        return ERROR_INVALID_N_MAX;
+        return ERROR_COLORS_INVALID_N_MAX;
     }
     // there are not enough different values for num_iterations to map to the outer colors. We don't know which color to dismiss?
     if (num_outer_colors > n_max) {
-        return ERROR_TOO_MANY_OUTER_COLORS;
+        return ERROR_COLORS_TOO_MANY_OUTER_COLORS;
     }
 
     // If number of iterations equals n_max, assume the point is in the Mandelbrot set and return the inner color.
@@ -81,7 +79,7 @@ int calculate_color(size_t num_iterations, Configuration settings, uint32_t *res
     // We have 2=num_outer_colors-1 color intervals [c1, c2], [c2, c3]. Then we map these intervals to the [0, 1.5], [1.5, 3] in the number of iterations, where 1.5 = (n_max-1)/(num_outer_colors-1).
     double segment_size = (n_max - 1) / (double)(num_outer_colors - 1);
     if (isnan(segment_size) || isinf(segment_size)) {
-        return ERROR_OVERFLOW;
+        return ERROR_ARITHMETIC_OVERFLOW;
     }
     size_t segment_index = num_iterations / segment_size;
     // Calculate the progress within the segment

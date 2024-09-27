@@ -1,9 +1,7 @@
 #ifndef PRINTER_H
 #define PRINTER_H
 
-#include "bitmap.h"
 #include "parser.h"
-#include "viewport.h"
 
 #define PROGRESS_BAR_WIDTH 20
 #define PROGRESS_STEP 0.05

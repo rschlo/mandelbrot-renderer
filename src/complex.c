@@ -39,7 +39,7 @@ int iterate_squence(Complex c, size_t n_max, size_t *p_iterations) {
     if (n_max == 0) {
         // The maximum number of iterations must be greater than 0.
         // Otherwise the sequence would not be iterated.
-        return ERROR;
+        return ERROR_ITERATE_N_MAX_0;
     }
 
     Complex z = {0.0, 0.0};

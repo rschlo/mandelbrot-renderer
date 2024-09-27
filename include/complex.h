@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #define ESCAPE_RADIUS 2
+#define ERROR_ITERATE_N_MAX_0 (ERROR_ILLEGAL_ARGUMENT - 500)
 
 /**
  * Represents a complex number.
@@ -13,6 +14,15 @@ typedef struct
     double real;
     double imag;
 } Complex;
+
+/**
+ * Represents a viewport in the complex plane. Both corners are complex numbers.
+ */
+typedef struct
+{
+    Complex lower_left;
+    Complex upper_right;
+} Viewport;
 
 /**
  * Multiplies two complex numbers a and b and stores the result in p_result.

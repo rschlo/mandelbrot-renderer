@@ -3,12 +3,13 @@
 
 #include <stdint.h>
 
-#include "viewport.h"
+#include "transform.h"
 
 #define MAX_LINE_LENGTH 256
 #define MAX_ARRAY_SIZE 100
-#define ERROR_FILE_NOT_FOUND -1
 #define MAX_NUM_COLORS 100
+
+#define ERROR_PARSER_FILE_NOT_FOUND (ERROR_IO - 200)
 
 /**
  * Represents the configuration for the visualization as read from the configuration file.

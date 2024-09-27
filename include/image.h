@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define ERROR_FILE_OPEN -1
-#define WARNING_IMAGE_SIZE_0 2
+#define ERROR_FILE_ACCESS (ERROR_IO - 400)
+#define ERROR_IMAGE_SIZE_0 (ERROR_ILLEGAL_ARGUMENT - 401)
 
 /**
  * Represents the size of an image.
@@ -57,23 +57,12 @@ typedef struct
 #pragma pack(pop)
 
 /**
- * Saves the image data as a BMP file.
- * The image data is expected to be in RGB format.
- *
- * @param output_path The path of the file to save.
- * @param size The size of the image in pixels.
- * @param image_data A pointer to the image data in RGB format.
- * @return Status code.
- */
-int saveBMP(const char *output_path, ImageSize size, unsigned char *image_data);
-
-/**
  * Sets the pixel at the given position in the image data. Note that the image data is expected to be in RGB format and (3*width*height) long
  *
  * @param x The x-coordinate of the pixel.
  * @param y The y-coordinate of the pixel.
  * @param size The size of the image in pixels.
- * @param color The color of the pixel.
+ * @param color The color of the pixel. From LSB to MSB: blue (8 bit), green (8 bit), red (8 bit). Alpha value will be ignored.
  * @param p_image_data A pointer to the image data.
  * @return Status code.
  */
@@ -87,5 +76,14 @@ int set_pixel_in_image_data(size_t x, size_t y, ImageSize size, uint32_t color, 
  * @return Status code.
  */
 int malloc_image_data(ImageSize size, unsigned char **p_p_image_data);
+
+/**
+ * Saves the image data to a file and frees the memory.
+ *
+ * @param p_image_data The image data to save.
+ * @param size The size of the image.
+ * @param output_path The path to save the image to.
+ */
+int export_and_free(unsigned char *p_image_data, ImageSize size, const char *output_path);
 
 #endif  // BITMAP_H

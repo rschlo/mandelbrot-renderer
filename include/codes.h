@@ -3,9 +3,13 @@
 
 
 #define SUCCESS 0
-#define ERROR -1
-#define ERROR_OVERFLOW -2
-#define ERROR_MEM_ALLOC -3
+#define ERROR -10000
+#define ERROR_ARITHMETIC_OVERFLOW -20000
+#define ERROR_MEMORY -30000
+#define ERROR_IO -40000
+#define ERROR_ILLEGAL_ARGUMENT -50000
+
+
 
 
 #endif // CODES_H

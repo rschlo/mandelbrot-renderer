@@ -7,9 +7,6 @@
 #include <string.h>
 #include <sys/time.h>
 
-#include "../include/bitmap.h"
-#include "../include/parser.h"
-#include "../include/viewport.h"
 
 void print_info(const char *config_path, const char *output_path, ImageSize size, Configuration p_config, double build_time) {
     printf("\n");
