@@ -4,17 +4,19 @@
 #include <string.h>
 #include <sys/time.h>
 
-#include "..\include\image.h"
 #include "..\include\codes.h"
 #include "..\include\colors.h"
 #include "..\include\complex.h"
+#include "..\include\image.h"
 #include "..\include\parser.h"
 #include "..\include\printer.h"
+#include "..\include\renderer.h"
 #include "..\include\transform.h"
 
 #define ARG_POS_CONFIG_PATH 1
 #define ARG_POS_WIDTH 2
 #define ARG_POS_OUTPUT_PATH 3
+#define EXPECTED_ARG_COUNT 4
 #define EXTENSION ".bmp"
 
 // This is a macro to measure the time of a function call.
@@ -28,74 +30,7 @@
     })
 
 /**
- * Processes the progress of the image building process.
- * If the progress is greater than the last output plus the progress step, the progress is printed to the console.
- *
- * @param progress The progress of the image building process. Must be between 0 and 1.
- * @param p_last_output The pointer to the last output progress.
- * @return Status code.
- */
-void process_progress(double progress, double *p_last_output) {
-    if ((progress - *p_last_output < PROGRESS_STEP) && p_last_output != 0 && progress != 1) {
-        return;
-    }
-    print_progress_bar(progress);
-    *p_last_output = progress;
-}
-
-/**
- * Builds the image data. The function iterates over all pixels and calculates
- * the color for each pixel. The color is determined by the number of iterations
- * needed to escape the ESCAPE_RADIUS. The color is then stored in the image data.
- * The memory for p_image_data must be allocated before calling this function. The function does not free the memory.
- *
- * @param size The size of the image in pixels.
- * @param config The configuration struct.
- * @param p_image_data A pointer to the image data where the colors should be stored.
- * @return Status code.
- */
-int build_image_and_print_progress(ImageSize size, Configuration config, unsigned char *p_image_data) {
-    Complex c = {0, 0};
-    size_t number_iterations;
-    uint32_t color;
-
-    double progress = 0.0;
-    double last_progress_output = 0.0;
-    process_progress(progress, &last_progress_output);
-    int status = SUCCESS;
-
-    for (int x = 0; x < size.width; x++) {
-        for (int y = 0; y < size.height; y++) {
-            status = pixelcoord_to_complex(x, y, config.viewport, size, &c);
-            if (status < 0) {
-                return status;
-            }
-            status = iterate_squence(c, config.n_max, &number_iterations);
-            if (status < 0) {
-                return status;
-            }
-            status = calculate_color(number_iterations, config, &color);
-            if (status < 0) {
-                return status;
-            }
-            status = set_pixel_in_image_data(x, y, size, color, p_image_data);
-            if (status < 0) {
-                return status;
-            }
-            // Note: Division by zero is not possible here, because size.width is always greater than 0.
-            // Otherwise the program would not reach this point.
-            progress = (double)x / (double)size.width;
-            process_progress(progress, &last_progress_output);
-        }
-    }
-
-    process_progress(1.0, &last_progress_output);
-    printf("\n");
-    return SUCCESS;
-}
-
-/**
- * Generates a valid filename by appending the specified extension if it is not already present.
+ * Generates a valid path by appending the specified extension if it is not already present.
  *
  * @param incomplete_path The incomplete path to append the extension to, if necessary.
  * @param extension The extension to append.
@@ -119,6 +54,8 @@ int generate_valid_path(char *incomplete_path, const char *extension, char **res
         }
         strcpy(*result, incomplete_path);
     }
+
+    return SUCCESS;
 }
 
 /**
@@ -129,7 +66,7 @@ int generate_valid_path(char *incomplete_path, const char *extension, char **res
  * Exports the image and prints the info.
  */
 int main(int argc, char **argv) {
-    if (argc != 4) {
+    if (argc != EXPECTED_ARG_COUNT) {
         print_usage(argv[0]);
         return ERROR;
     }
@@ -172,7 +109,7 @@ int main(int argc, char **argv) {
 
     // Build image and print progress
     double build_time;
-    int status_build = CPUTIME(build_image_and_print_progress(size, config, p_image_data), &build_time);
+    int status_build = CPUTIME(build_image(size, config, p_image_data, &print_progress_bar), &build_time);
     if (status_build < 0) {
         printf("Error: Could not build image. \n");
         return ERROR;
