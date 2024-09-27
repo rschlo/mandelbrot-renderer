@@ -14,6 +14,7 @@
  * @param size The size of the image in pixels.
  * @param config The configuration struct.
  * @param p_image_data A pointer to the image data where the colors should be stored.
+ * @param progress_callback The callback function to output the progress.
  * @return Status code.
  */
 int build_image(ImageSize size, Configuration config, unsigned char *p_image_data, void (*progress_callback)(double));

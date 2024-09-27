@@ -6,14 +6,19 @@
 #include "../include/config.h"
 #include "../include/image.h"
 
+/**
+ * The progress step for the image building process.
+ * If the progress is greater than the last output plus the progress step, the progress is outputted through the progress_callback function.
+ */
 #define PROGRESS_STEP 0.05
 
 /**
  * Processes the progress of the image building process.
- * If the progress is greater than the last output plus the progress step, the progress is printed to the console.
+ * If the progress is greater than the last output plus the progress step, the progress is outputted.
  *
  * @param progress The progress of the image building process. Must be between 0 and 1.
  * @param p_last_output The pointer to the last output progress.
+ * @param progress_callback The callback function to output the progress.
  * @return Status code.
  */
 void _process_progress(double progress, double *p_last_output, void (*progress_callback)(double)) {
@@ -23,7 +28,6 @@ void _process_progress(double progress, double *p_last_output, void (*progress_c
     progress_callback(progress);
     *p_last_output = progress;
 }
-
 
 int build_image(ImageSize size, Configuration config, unsigned char *p_image_data, void (*progress_callback)(double)) {
     Complex c = {0, 0};
