@@ -83,7 +83,7 @@ int _set_value(char *key, char *value, Configuration *p_settings) {
         // Parse the outer colors as an array
         char *token = strtok(value, ARRAY_SEPERATOR_STR);
         size_t index = 0;
-        while (status == SUCCESS && token != NULL && index < MAX_ARRAY_SIZE) {
+        while (status == SUCCESS && token != NULL && index < MAX_NUM_COLORS) {
             status = parse_hex(token, &p_settings->outer_colors[index]);
             token = strtok(NULL, ARRAY_SEPERATOR_STR);
             index++;

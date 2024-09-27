@@ -3,25 +3,12 @@
 
 #include <stdint.h>
 
+#include "config.h"
 #include "transform.h"
 
 #define MAX_LINE_LENGTH 256
-#define MAX_ARRAY_SIZE 100
-#define MAX_NUM_COLORS 100
 
 #define ERROR_PARSER_FILE_NOT_FOUND (ERROR_IO - 200)
-
-/**
- * Represents the configuration for the visualization as read from the configuration file.
- * The configuration includes the viewport, the maximum iteration depth, the inner color, the outer colors and the number of outer colors.
- */
-typedef struct {
-    Viewport viewport;
-    size_t n_max;
-    uint32_t inner_color;
-    size_t num_outer_colors;
-    uint32_t outer_colors[MAX_NUM_COLORS];
-} Configuration;
 
 /**
  * Parses the ini file and extracts the values for the viewport, the maximum iteration depth, the inner color, the outer colors and the number of outer colors.

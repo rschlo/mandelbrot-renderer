@@ -1,3 +1,13 @@
+/**
+ * @file complex.h
+ * @brief This file contains functions to work with complex numbers.
+ *
+ * It includes functions to multiply, add and calculate the magnitude of complex numbers.
+ * The file also includes a function to iterate the Mandelbrot function for a given complex number.
+ *
+ * @author Robert Schlosshan
+ */
+
 #ifndef COMPLEX_H
 #define COMPLEX_H
 

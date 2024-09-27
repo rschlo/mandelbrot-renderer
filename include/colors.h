@@ -1,10 +1,17 @@
+/**
+ * @file colors.h
+ * @brief This file contains color utilities and functions to calculate colors a given point in and outside of the Mandelbrot set.
+ *
+ * @author Robert Schlosshan
+ */
+
 #ifndef COLORS_H
 #define COLORS_H
 
 #include <stdint.h>
 
-#include "parser.h"
 #include "codes.h"
+#include "parser.h"
 
 #define ERROR_COLORS_NO_OUTER_COLORS (ERROR_ILLEGAL_ARGUMENT - 100)
 #define ERROR_COLORS_TOO_MANY_OUTER_COLORS (ERROR_ILLEGAL_ARGUMENT - 101)
