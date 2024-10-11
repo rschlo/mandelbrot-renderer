@@ -5,7 +5,7 @@
 
 int pixelcoord_to_complex(size_t x, size_t y, Viewport viewport, ImageSize size, Complex *p_c) {
     if (size.width == 0) {
-        return ERROR;
+        return GENERIC_ERROR;
     }
     double viewport_width = fabs(viewport.upper_right.real - viewport.lower_left.real);
     double s = viewport_width / size.width;
@@ -20,7 +20,7 @@ int pixelcoord_to_complex(size_t x, size_t y, Viewport viewport, ImageSize size,
 int viewport_to_image_size(Viewport viewport, size_t image_width, ImageSize *p_image_size) {
     if (viewport.upper_right.real == viewport.lower_left.real ||
         viewport.upper_right.imag == viewport.lower_left.imag) {
-        return ERROR_VIEWPORT_INVALID_VIEWPORT;
+        return ERROR_INVALID_VIEWPORT;
     }
 
     p_image_size->width = image_width;

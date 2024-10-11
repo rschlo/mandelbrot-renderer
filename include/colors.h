@@ -10,13 +10,8 @@
 
 #include <stdint.h>
 
-#include "codes.h"
+#include "errors.h"
 #include "parser.h"
-
-#define ERROR_COLORS_NO_OUTER_COLORS (ERROR_ILLEGAL_ARGUMENT - 100)
-#define ERROR_COLORS_TOO_MANY_OUTER_COLORS (ERROR_ILLEGAL_ARGUMENT - 101)
-#define ERROR_COLORS_INVALID_NUM_ITERATIONS (ERROR_ILLEGAL_ARGUMENT - 102)
-#define ERROR_COLORS_INVALID_N_MAX (ERROR_ILLEGAL_ARGUMENT - 103)
 
 /**
  * Extracts the red part of a color stored as a uint32_t.

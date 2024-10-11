@@ -3,9 +3,6 @@
 
 #include <stdint.h>
 
-#define ERROR_FILE_ACCESS (ERROR_IO - 400)
-#define ERROR_IMAGE_SIZE_0 (ERROR_ILLEGAL_ARGUMENT - 401)
-
 /**
  * Represents the size of an image.
  */

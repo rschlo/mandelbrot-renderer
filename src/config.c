@@ -1,7 +1,7 @@
 
 #include "../include/config.h"
 
-#include "../include/codes.h"
+#include "../include/errors.h"
 
 int init_default_config(Configuration *p_config) {
     p_config->viewport.lower_left.real = -2;
@@ -21,18 +21,18 @@ int init_default_config(Configuration *p_config) {
 int validate_config(Configuration config) {
     // TODO: Implement this function
     if (config.iteration_depth == 0) {
-        return ERROR;
+        return GENERIC_ERROR;
     }
     if (config.num_outer_colors < 1) {
-        return ERROR;
+        return GENERIC_ERROR;
     }
     if (config.viewport.lower_left.real == config.viewport.upper_right.real ||
         config.viewport.lower_left.imag == config.viewport.upper_right.imag) {
-        return ERROR;
+        return GENERIC_ERROR;
     }
     if (config.viewport.lower_left.real > config.viewport.upper_right.real ||
         config.viewport.lower_left.imag > config.viewport.upper_right.imag) {
-        return ERROR;
+        return GENERIC_ERROR;
     }
     return SUCCESS;
 }

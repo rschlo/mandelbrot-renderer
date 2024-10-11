@@ -9,32 +9,60 @@
 #define KEY_VALUE_SEPARATOR_STR "="
 #define NUM_COMMENT_CHARS 2
 #define COMMENT_CHARS {'#', ';'}
-#define ARRAY_SEPERATOR_STR ","
+#define ARRAY_SEPARATOR_STR ","
 #define STR_TERMINATOR '\0'
 #define EQUAL 0
+// Note that this error code is only for internal use. It will not be returned to by any function defined in the header file.
+#define ERROR_PARSING -1
 
+/**
+ * Parses a string to a size_t value. 
+ * 
+ * @param str The string to parse.
+ * @param p_value The pointer to store the parsed value.
+ */
 int parse_size_t(const char *str, size_t *p_value) {
     char *endptr;
     *p_value = (size_t)strtoull(str, &endptr, 10);
     if (*endptr != STR_TERMINATOR) {
-        return ERROR;
+        return ERROR_PARSING;
     }
 }
 
+/**
+ * Parses a string to a double value.
+ * 
+ * @param str The string to parse.
+ * @param p_value The pointer to store the parsed value.
+ */
 int parse_double(const char *str, double *p_value) {
     char *endptr;
     *p_value = strtod(str, &endptr);
     if (*endptr != STR_TERMINATOR) {
-        return ERROR;
+        return ERROR_PARSING;
     }
     return SUCCESS;
 }
 
+/**
+ * Parses a string as a hexadecimal int value.
+ * 
+ * @param str The string to parse.
+ * @param p_value The pointer to store the parsed value.
+ */
 int parse_hex(const char *str, uint32_t *p_value) {
     char *endptr;
     *p_value = (uint32_t)strtoul(str, &endptr, 16);
     if (*endptr != STR_TERMINATOR) {
-        return ERROR;
+        return ERROR_PARSING;
+    }
+    return SUCCESS;
+}
+
+int parse_image_width(const char *str, size_t *p_value) {
+    int status = parse_size_t(str, p_value);
+    if (status != SUCCESS || *p_value == 0) {
+        return ERROR_INVALID_IMAGE_WIDTH;
     }
     return SUCCESS;
 }
@@ -69,32 +97,49 @@ int _set_value(char *key, char *value, Configuration *p_settings) {
     int status = SUCCESS;
     if (strcmp(key, "iteration_depth") == EQUAL) {
         status = parse_size_t(value, &p_settings->iteration_depth);
+        if (status != SUCCESS) {
+            return ERROR_INVALID_ITERATION_DEPTH;
+        }
     } else if (strcmp(key, "lower_left_real") == EQUAL) {
         status = parse_double(value, &p_settings->viewport.lower_left.real);
+        if (status != SUCCESS) {
+            return ERROR_INVALID_VIEWPORT;
+        }
     } else if (strcmp(key, "lower_left_imag") == EQUAL) {
         status = parse_double(value, &p_settings->viewport.lower_left.imag);
+        if (status != SUCCESS) {
+            return ERROR_INVALID_VIEWPORT;
+        }
     } else if (strcmp(key, "upper_right_real") == EQUAL) {
         status = parse_double(value, &p_settings->viewport.upper_right.real);
+        if (status != SUCCESS) {
+            return ERROR_INVALID_VIEWPORT;
+        }
     } else if (strcmp(key, "upper_right_imag") == EQUAL) {
         status = parse_double(value, &p_settings->viewport.upper_right.imag);
+        if (status != SUCCESS) {
+            return ERROR_INVALID_VIEWPORT;
+        }
     } else if (strcmp(key, "inner_color") == EQUAL) {
         status = parse_hex(value, &p_settings->inner_color);
+        if (status != SUCCESS) {
+            return ERROR_INVALID_INNER_COLOR;
+        }
     } else if (strcmp(key, "outer_colors") == EQUAL) {
         // Parse the outer colors as an array
-        char *token = strtok(value, ARRAY_SEPERATOR_STR);
+        char *token = strtok(value, ARRAY_SEPARATOR_STR);
         size_t index = 0;
         while (status == SUCCESS && token != NULL && index < MAX_NUM_COLORS) {
             status = parse_hex(token, &p_settings->outer_colors[index]);
-            token = strtok(NULL, ARRAY_SEPERATOR_STR);
+            token = strtok(NULL, ARRAY_SEPARATOR_STR);
             index++;
+        }
+        if (status != SUCCESS) {
+            return ERROR_INVALID_OUTER_COLORS;
         }
         p_settings->num_outer_colors = index;  // Set the actual number of outer colors
     } else {
-        return ERROR;
-    }
-    // Return error code if the value could not be parsed
-    if (status < 0) {
-        return ERROR;
+        return ERROR_INVALID_CONFIG_KEY;
     }
 }
 
@@ -117,7 +162,7 @@ bool _is_comment_line(char *line) {
 int parse_ini_file(const char *path, Configuration *p_config) {
     FILE *file = fopen(path, "r");
     if (file == NULL) {
-        return ERROR_PARSER_FILE_NOT_FOUND;
+        return ERROR_FILE_NOT_FOUND;
     }
 
     char line[MAX_LINE_LENGTH];
@@ -140,9 +185,7 @@ int parse_ini_file(const char *path, Configuration *p_config) {
 
             if (key && value) {
                 int status = _set_value(key, value, p_config);
-                if (status < 0) {
-                    return ERROR;
-                }
+                if (status < 0) return status;
             }
         }
     }

@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "..\include\codes.h"
+#include "..\include\errors.h"
 
 int multiply(Complex a, Complex b, Complex *p_result) {
     // TODO: Check overflow?
@@ -39,7 +39,7 @@ int iterate_squence(Complex c, size_t iteration_depth, size_t *p_iterations) {
     if (iteration_depth == 0) {
         // The maximum number of iterations must be greater than 0.
         // Otherwise the sequence would not be iterated.
-        return ERROR_ITERATE_N_MAX_0;
+        return ERROR_INVALID_ITERATION_DEPTH;
     }
 
     Complex z = {0.0, 0.0};

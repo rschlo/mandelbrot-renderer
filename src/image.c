@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../include/codes.h"
+#include "../include/errors.h"
 #include "../include/colors.h"
 
 int set_pixel_in_image_data(size_t x, size_t y, ImageSize size, uint32_t color, unsigned char *p_image_data) {
@@ -88,7 +88,7 @@ int malloc_image_data(ImageSize size, unsigned char **p_p_image_data) {
 
     unsigned char *p_memory = (unsigned char *)malloc(malloc_size);
     if (p_memory == NULL) {
-        return ERROR_MEMORY;
+        return ERROR_MEMORY_ALLOC;
     }
     *p_p_image_data = p_memory;
     return SUCCESS;

@@ -14,7 +14,6 @@
 #include <stddef.h>
 
 #define ESCAPE_RADIUS 2
-#define ERROR_ITERATE_N_MAX_0 (ERROR_ILLEGAL_ARGUMENT - 500)
 
 /**
  * Represents a complex number.

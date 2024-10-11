@@ -1,6 +1,6 @@
 #include "../include/renderer.h"
 
-#include "../include/codes.h"
+#include "../include/errors.h"
 #include "../include/colors.h"
 #include "../include/complex.h"
 #include "../include/config.h"

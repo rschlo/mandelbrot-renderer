@@ -1,11 +1,10 @@
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
 
-#include "codes.h"
+#include "errors.h"
 #include "complex.h"
 #include "image.h"
 
-#define ERROR_VIEWPORT_INVALID_VIEWPORT (ERROR_ILLEGAL_ARGUMENT - 300)
 
 /**
  * Maps the pixel coordinates (x, y) to the complex plane.
