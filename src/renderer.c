@@ -45,7 +45,7 @@ int build_image(ImageSize size, Configuration config, unsigned char *p_image_dat
             if (status < 0) {
                 return status;
             }
-            status = iterate_squence(c, config.n_max, &number_iterations);
+            status = iterate_squence(c, config.iteration_depth, &number_iterations);
             if (status < 0) {
                 return status;
             }

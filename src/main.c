@@ -66,10 +66,13 @@ int generate_valid_path(char *incomplete_path, const char *extension, char **res
  * Exports the image and prints the info.
  */
 int main(int argc, char **argv) {
-    if (argc != EXPECTED_ARG_COUNT) {
-        print_usage(argv[0]);
-        return ERROR;
+    // TODO: free memory also in case of errors
+
+    if (strcmp(argv[ARG_POS_CONFIG_PATH], "-h") == 0 || strcmp(argv[ARG_POS_CONFIG_PATH], "--help") == 0) {
+        print_help(argv[0]);
+        return SUCCESS;
     }
+    
 
     char *config_path = argv[ARG_POS_CONFIG_PATH];
     char *str_width = argv[ARG_POS_WIDTH];
@@ -123,7 +126,7 @@ int main(int argc, char **argv) {
         printf("Error: Could not save image\n");
         return ERROR;
     }
-    printf("Image saved at \"%s\"\n", output_path);
+    printf("\n");
 
     // Print info
     print_info(config_path, output_path, size, config, build_time);

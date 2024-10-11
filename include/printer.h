@@ -19,17 +19,18 @@
 void print_info(const char *config_path, const char *output_path, ImageSize size, Configuration config, double build_time);
 
 /**
- * Prints how the program should be used to the console.
- *
- * @param program_name The name of the program.
- */
-void print_usage(const char *program_name);
-
-/**
  * Prints a progress bar to the console. The progress bar is a horizontal bar that shows the progress of a process.
  *
  * @param progress The progress of the process. The progress must be between 0 and 1.
  */
 void print_progress_bar(double progress);
+
+/**
+ * Prints the help message to the console.
+ * The help message explains how to use the program and what the command line arguments are. 
+ * 
+ * @param program_name The name of the program.
+ */
+void print_help(const char *program_name);
 
 #endif  // PRINTER_H

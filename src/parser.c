@@ -67,8 +67,8 @@ int _remove_spaces(char *str) {
  */
 int _set_value(char *key, char *value, Configuration *p_settings) {
     int status = SUCCESS;
-    if (strcmp(key, "n_max") == EQUAL) {
-        status = parse_size_t(value, &p_settings->n_max);
+    if (strcmp(key, "iteration_depth") == EQUAL) {
+        status = parse_size_t(value, &p_settings->iteration_depth);
     } else if (strcmp(key, "lower_left_real") == EQUAL) {
         status = parse_double(value, &p_settings->viewport.lower_left.real);
     } else if (strcmp(key, "lower_left_imag") == EQUAL) {

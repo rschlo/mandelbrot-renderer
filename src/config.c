@@ -8,7 +8,7 @@ int init_default_config(Configuration *p_config) {
     p_config->viewport.lower_left.imag = -2;
     p_config->viewport.upper_right.real = 2;
     p_config->viewport.upper_right.imag = 2;
-    p_config->n_max = 100;
+    p_config->iteration_depth = 100;
     p_config->inner_color = 0x000000;
     p_config->num_outer_colors = 4;
     p_config->outer_colors[0] = 0xFFFFFF;
@@ -20,7 +20,7 @@ int init_default_config(Configuration *p_config) {
 
 int validate_config(Configuration config) {
     // TODO: Implement this function
-    if (config.n_max == 0) {
+    if (config.iteration_depth == 0) {
         return ERROR;
     }
     if (config.num_outer_colors < 1) {

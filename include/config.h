@@ -25,7 +25,7 @@
  */
 typedef struct {
     Viewport viewport;
-    size_t n_max;
+    size_t iteration_depth;
     uint32_t inner_color;
     size_t num_outer_colors;
     uint32_t outer_colors[MAX_NUM_COLORS];
@@ -34,7 +34,7 @@ typedef struct {
 /**
  * Initializes the configuration with default values. The default values are:
  * - viewport: lower_left = (-2, -2), upper_right = (2, 2)
- * - n_max: 100
+ * - iteration_depth: 100
  * - inner_color: 0x000000
  * - outer_colors: 0xFFFFFF, 0, 0xFFFFFF, 0xE200F2
  *

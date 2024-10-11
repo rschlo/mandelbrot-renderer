@@ -47,14 +47,14 @@ upper_right_real = 2
 upper_right_imag = 2
 
 # Maximum amount of iterations (iteration depth)
-n_max = 100
+iteration_depth = 100
 
 # Color (hexadecimal representation) for points inside of the mandelbrot set
 inner_color = 0x000000
 
 # Color gradient (hexadecimal representation) for points outside of the mandelbrot set
 # > First color: discarded after 1 iteration
-# > Last color: discarded after n_max-1 iteration
+# > Last color: discarded after iteration_depth-1 iteration
 # At least one color must be specified
 outer_colors = 0xFFFFFF, 0x00FF00, 0x0000FF
 ```
