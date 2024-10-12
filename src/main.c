@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     Configuration config;
     status = parse_ini_file(config_path, &config);
     if (status != SUCCESS) {
-        printf("%s", get_status_message(status));
+        print_error_message(status);
         return status;
     }
 
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
     size_t image_width;
     status = parse_image_width(str_width, &image_width);
     if (status != SUCCESS) {
-        printf("%s", get_status_message(status));
+        print_error_message(status);
         return status;
     }
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     ImageSize size;
     status = viewport_to_image_size(config.viewport, image_width, &size);
     if (status != SUCCESS) {
-        printf("%s", get_status_message(status));
+        print_error_message(status);
         return status;
     }
 
@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
     unsigned char *p_image_data;
     status = malloc_image_data(size, &p_image_data);
     if (status != SUCCESS) {
-        printf("%s", get_status_message(status));
+        print_error_message(status);
         return status;
     }
 
@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
     double build_time;
     status = CPUTIME(build_image(size, config, p_image_data, &print_progress_bar), &build_time);
     if (status != SUCCESS) {
-        printf("%s", get_status_message(status));
+        print_error_message(status);
         return status;
     }
 
@@ -123,15 +123,14 @@ int main(int argc, char **argv) {
     char *output_path;
     status = generate_valid_path(incomplete_output_path, EXTENSION, &output_path);
     if (status != SUCCESS) {
-        printf("%s", get_status_message(status));
+        print_error_message(status);
         return status;
     }
     status = export_and_free(p_image_data, size, output_path);
-    if (status != SUCCESS || status != SUCCESS) {
-        printf("%s", get_status_message(status));
+    if (status != SUCCESS) {
+        print_error_message(status);
         return status;
     }
-    printf("\n");
 
     // Print info
     print_info(config_path, output_path, size, config, build_time);

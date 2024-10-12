@@ -9,7 +9,7 @@
 
 
 void print_info(const char *config_path, const char *output_path, ImageSize size, Configuration p_config, double build_time) {
-    printf("\n");
+    printf("\n\n");
     printf("> output file: %s\n", output_path);
     printf("> image size: %d x %d\n", size.width, size.height);
     printf("> configurations (%s):\n", config_path);
@@ -50,6 +50,10 @@ void print_help(const char *program_name) {
     printf("  inner_color = <hex>\n");
     printf("  outer_colors = <hex>, <hex> ...\n");
     */
+}
+
+void print_error_message(int status) {
+    printf("Error: %s\n", get_status_message(status));
 }
 
 

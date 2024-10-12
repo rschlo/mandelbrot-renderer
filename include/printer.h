@@ -33,4 +33,11 @@ void print_progress_bar(double progress);
  */
 void print_help(const char *program_name);
 
+/**
+ * Prints an error message to the console. 
+ * 
+ * @param status The status code of the error.
+ */
+void print_error_message(int status);
+
 #endif  // PRINTER_H

@@ -5,37 +5,30 @@
 
 #include "..\include\errors.h"
 
-int multiply(Complex a, Complex b, Complex *p_result) {
-    // TODO: Check overflow?
+void multiply(Complex a, Complex b, Complex *p_result) {
     p_result->real = a.real * b.real - a.imag * b.imag;
     p_result->imag = a.real * b.imag + a.imag * b.real;
-    return SUCCESS;
 }
 
-int multiply_scalar(Complex a, double scalar, Complex *p_result) {
-    // TODO: Check overflow?
+void multiply_scalar(Complex a, double scalar, Complex *p_result) {
     p_result->real = a.real * scalar;
     p_result->imag = a.imag * scalar;
-    return SUCCESS;
 }
 
-int add(Complex a, Complex b, Complex *p_result) {
-    // TODO: Check overflow?
+void add(Complex a, Complex b, Complex *p_result) {
     p_result->real = a.real + b.real;
     p_result->imag = a.imag + b.imag;
-    return SUCCESS;
 }
 
 // TODO: Check overflow?
-int magnitude(Complex c, double *p_result) {
+void magnitude(Complex c, double *p_result) {
     *p_result = sqrt(c.real * c.real + c.imag * c.imag);
-    return SUCCESS;
 }
 
 /**
  * Note that there can't be an overflow because of the ESCAPE_RADIUS.
  */
-int iterate_squence(Complex c, size_t iteration_depth, size_t *p_iterations) {
+int iterate_mandelbrot_sequence(Complex c, size_t iteration_depth, size_t *p_iterations) {
     if (iteration_depth == 0) {
         // The maximum number of iterations must be greater than 0.
         // Otherwise the sequence would not be iterated.

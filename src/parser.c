@@ -6,14 +6,26 @@
 #include <stdlib.h>
 #include <string.h>
 
+// The string that separates the key and the value in the ini file.
 #define KEY_VALUE_SEPARATOR_STR "="
+// The keys that are expected in the ini file.
+#define KEY_ITERATION_DEPTH "iteration_depth"
+#define KEY_LOWER_LEFT_REAL "lower_left_real"
+#define KEY_LOWER_LEFT_IMAG "lower_left_imag"
+#define KEY_UPPER_RIGHT_REAL "upper_right_real"
+#define KEY_UPPER_RIGHT_IMAG "upper_right_imag"
+#define KEY_INNER_COLOR "inner_color"
+#define KEY_OUTER_COLORS "outer_colors"
+// The string that separates the values in an array in the ini file. 
+#define ARRAY_SEPARATOR_STR ","
+// Comment characters that indicate that the line is a comment.
 #define NUM_COMMENT_CHARS 2
 #define COMMENT_CHARS {'#', ';'}
-#define ARRAY_SEPARATOR_STR ","
+// The string terminator character.
 #define STR_TERMINATOR '\0'
-#define EQUAL 0
 // Note that this error code is only for internal use. It will not be returned to by any function defined in the header file.
 #define ERROR_PARSING -1
+
 
 /**
  * Parses a string to a size_t value. 
@@ -21,7 +33,7 @@
  * @param str The string to parse.
  * @param p_value The pointer to store the parsed value.
  */
-int parse_size_t(const char *str, size_t *p_value) {
+int _parse_size_t(const char *str, size_t *p_value) {
     char *endptr;
     *p_value = (size_t)strtoull(str, &endptr, 10);
     if (*endptr != STR_TERMINATOR) {
@@ -35,7 +47,7 @@ int parse_size_t(const char *str, size_t *p_value) {
  * @param str The string to parse.
  * @param p_value The pointer to store the parsed value.
  */
-int parse_double(const char *str, double *p_value) {
+int _parse_double(const char *str, double *p_value) {
     char *endptr;
     *p_value = strtod(str, &endptr);
     if (*endptr != STR_TERMINATOR) {
@@ -50,7 +62,7 @@ int parse_double(const char *str, double *p_value) {
  * @param str The string to parse.
  * @param p_value The pointer to store the parsed value.
  */
-int parse_hex(const char *str, uint32_t *p_value) {
+int _parse_hex(const char *str, uint32_t *p_value) {
     char *endptr;
     *p_value = (uint32_t)strtoul(str, &endptr, 16);
     if (*endptr != STR_TERMINATOR) {
@@ -60,7 +72,7 @@ int parse_hex(const char *str, uint32_t *p_value) {
 }
 
 int parse_image_width(const char *str, size_t *p_value) {
-    int status = parse_size_t(str, p_value);
+    int status = _parse_size_t(str, p_value);
     if (status != SUCCESS || *p_value == 0) {
         return ERROR_INVALID_IMAGE_WIDTH;
     }
@@ -95,42 +107,42 @@ int _remove_spaces(char *str) {
  */
 int _set_value(char *key, char *value, Configuration *p_settings) {
     int status = SUCCESS;
-    if (strcmp(key, "iteration_depth") == EQUAL) {
-        status = parse_size_t(value, &p_settings->iteration_depth);
+    if (strcmp(key, KEY_ITERATION_DEPTH) == 0) {
+        status = _parse_size_t(value, &p_settings->iteration_depth);
         if (status != SUCCESS) {
             return ERROR_INVALID_ITERATION_DEPTH;
         }
-    } else if (strcmp(key, "lower_left_real") == EQUAL) {
-        status = parse_double(value, &p_settings->viewport.lower_left.real);
+    } else if (strcmp(key, KEY_LOWER_LEFT_REAL) == 0) {
+        status = _parse_double(value, &p_settings->viewport.lower_left.real);
         if (status != SUCCESS) {
             return ERROR_INVALID_VIEWPORT;
         }
-    } else if (strcmp(key, "lower_left_imag") == EQUAL) {
-        status = parse_double(value, &p_settings->viewport.lower_left.imag);
+    } else if (strcmp(key, KEY_LOWER_LEFT_IMAG) == 0) {
+        status = _parse_double(value, &p_settings->viewport.lower_left.imag);
         if (status != SUCCESS) {
             return ERROR_INVALID_VIEWPORT;
         }
-    } else if (strcmp(key, "upper_right_real") == EQUAL) {
-        status = parse_double(value, &p_settings->viewport.upper_right.real);
+    } else if (strcmp(key, KEY_UPPER_RIGHT_REAL) == 0) {
+        status = _parse_double(value, &p_settings->viewport.upper_right.real);
         if (status != SUCCESS) {
             return ERROR_INVALID_VIEWPORT;
         }
-    } else if (strcmp(key, "upper_right_imag") == EQUAL) {
-        status = parse_double(value, &p_settings->viewport.upper_right.imag);
+    } else if (strcmp(key, KEY_UPPER_RIGHT_IMAG) == 0) {
+        status = _parse_double(value, &p_settings->viewport.upper_right.imag);
         if (status != SUCCESS) {
             return ERROR_INVALID_VIEWPORT;
         }
-    } else if (strcmp(key, "inner_color") == EQUAL) {
-        status = parse_hex(value, &p_settings->inner_color);
+    } else if (strcmp(key, KEY_INNER_COLOR) == 0) {
+        status = _parse_hex(value, &p_settings->inner_color);
         if (status != SUCCESS) {
             return ERROR_INVALID_INNER_COLOR;
         }
-    } else if (strcmp(key, "outer_colors") == EQUAL) {
+    } else if (strcmp(key, KEY_OUTER_COLORS) == 0) {
         // Parse the outer colors as an array
         char *token = strtok(value, ARRAY_SEPARATOR_STR);
         size_t index = 0;
         while (status == SUCCESS && token != NULL && index < MAX_NUM_COLORS) {
-            status = parse_hex(token, &p_settings->outer_colors[index]);
+            status = _parse_hex(token, &p_settings->outer_colors[index]);
             token = strtok(NULL, ARRAY_SEPARATOR_STR);
             index++;
         }
@@ -179,7 +191,7 @@ int parse_ini_file(const char *path, Configuration *p_config) {
 
         // Note that strchr expects a char but strtok expects a *char (string).
         if (strchr(line, KEY_VALUE_SEPARATOR_STR[0])) {
-            // Seperate the line into key and value
+            // Separate the line into key and value
             char *key = strtok(line, KEY_VALUE_SEPARATOR_STR);
             char *value = strtok(NULL, KEY_VALUE_SEPARATOR_STR);
 

@@ -75,7 +75,7 @@ int calculate_color(size_t num_iterations, Configuration settings, uint32_t *res
     }
 
     // Calculate segment size and segment index. The segment size is the size of the color interval in the number of iterations.
-    // Example: I have 3 outer colors and iteration_depth = 4. Then num_iterions can be 0, 1, 2, 3 (4 is mapped to inner color, see clause above).
+    // Example: I have 3 outer colors and iteration_depth = 4. Then num_iterations can be 0, 1, 2, 3 (4 is mapped to inner color, see clause above).
     // We have 2=num_outer_colors-1 color intervals [c1, c2], [c2, c3]. Then we map these intervals to the [0, 1.5], [1.5, 3] in the number of iterations, where 1.5 = (iteration_depth-1)/(num_outer_colors-1).
     double segment_size = (iteration_depth - 1) / (double)(num_outer_colors - 1);
     if (isnan(segment_size) || isinf(segment_size)) {

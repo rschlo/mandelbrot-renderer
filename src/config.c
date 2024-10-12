@@ -21,18 +21,18 @@ int init_default_config(Configuration *p_config) {
 int validate_config(Configuration config) {
     // TODO: Implement this function
     if (config.iteration_depth == 0) {
-        return GENERIC_ERROR;
+        return ERROR_INVALID_ITERATION_DEPTH;
     }
     if (config.num_outer_colors < 1) {
-        return GENERIC_ERROR;
+        return ERROR_NO_OUTER_COLORS;
     }
     if (config.viewport.lower_left.real == config.viewport.upper_right.real ||
         config.viewport.lower_left.imag == config.viewport.upper_right.imag) {
-        return GENERIC_ERROR;
+        return ERROR_INVALID_VIEWPORT;
     }
     if (config.viewport.lower_left.real > config.viewport.upper_right.real ||
         config.viewport.lower_left.imag > config.viewport.upper_right.imag) {
-        return GENERIC_ERROR;
+        return ERROR_INVALID_VIEWPORT;
     }
     return SUCCESS;
 }

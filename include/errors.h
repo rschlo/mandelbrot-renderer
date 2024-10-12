@@ -23,6 +23,8 @@
 
 #define ERROR_INVALID_IMAGE_WIDTH -16
 
+#define TRY(x) do { int _status = (x); if (_status < 0) return _status; } while (0)
+
 char* get_status_message(int status_code);
 
 #endif // CODES_H

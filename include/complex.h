@@ -39,9 +39,8 @@ typedef struct
  * @param a The first complex number.
  * @param b The second complex number.
  * @param p_result A pointer to the complex number where the result should be stored.
- * @return Status code.
  */
-int multiply(Complex a, Complex b, Complex *p_result);
+void multiply(Complex a, Complex b, Complex *p_result);
 
 /**
  * Multiplies a complex number a with a scalar and stores the result in p_result.
@@ -49,9 +48,8 @@ int multiply(Complex a, Complex b, Complex *p_result);
  * @param a The complex number.
  * @param scalar The scalar.
  * @param result A pointer to the complex number where the result should be stored.
- * @return Status code.
  */
-int multiply_scalar(Complex a, double scalar, Complex *p_result);
+void multiply_scalar(Complex a, double scalar, Complex *p_result);
 
 /**
  * Adds two complex numbers a and b and stores the result in p_result.
@@ -59,18 +57,16 @@ int multiply_scalar(Complex a, double scalar, Complex *p_result);
  * @param a The first complex number.
  * @param b The second complex number.
  * @param p_result A pointer to the complex number where the result should be stored.
- * @return Status code.
  */
-int add(Complex a, Complex b, Complex *p_result);
+void add(Complex a, Complex b, Complex *p_result);
 
 /**
  * Calculates the magnitude of a complex number c and stores the result in p_result.
  *
  * @param c The complex number.
  * @param p_result A pointer to store the result.
- * @return Status code.
  */
-int magnitude(Complex c, double *p_result);
+void magnitude(Complex c, double *p_result);
 
 /**
  * Iterates the Mandelbrot function for a given complex number c.
@@ -84,6 +80,6 @@ int magnitude(Complex c, double *p_result);
  * @param p_iterations A pointer to store the number of iterations for which the mandelbrot function remained within the ESCAPE_RADIUS.
  * @return Status code.
  */
-int iterate_squence(Complex c, size_t iteration_depth, size_t *p_iterations);
+int iterate_mandelbrot_sequence(Complex c, size_t iteration_depth, size_t *p_iterations);
 
 #endif  // COMPLEX_H
