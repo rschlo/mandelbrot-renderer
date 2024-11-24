@@ -1,7 +1,8 @@
 #ifndef PRINTER_H
 #define PRINTER_H
 
-#include "parser.h"
+#include "image_manager.h"
+#include "input_parser.h"
 
 #define PROGRESS_BAR_WIDTH 20
 #define PROGRESS_STEP 0.05
@@ -27,15 +28,15 @@ void print_progress_bar(double progress);
 
 /**
  * Prints the help message to the console.
- * The help message explains how to use the program and what the command line arguments are. 
- * 
+ * The help message explains how to use the program and what the command line arguments are.
+ *
  * @param program_name The name of the program.
  */
 void print_help(const char *program_name);
 
 /**
- * Prints an error message to the console. 
- * 
+ * Prints an error message to the console.
+ *
  * @param status The status code of the error.
  */
 void print_error_message(int status);

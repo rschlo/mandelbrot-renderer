@@ -4,14 +4,11 @@
 #include <string.h>
 #include <sys/time.h>
 
-#include "..\include\colors.h"
-#include "..\include\complex.h"
-#include "..\include\errors.h"
-#include "..\include\image.h"
-#include "..\include\parser.h"
+#include "..\include\image_manager.h"
+#include "..\include\input_parser.h"
 #include "..\include\printer.h"
 #include "..\include\renderer.h"
-#include "..\include\transform.h"
+#include "..\include\status_manager.h"
 
 #define ARG_POS_CONFIG_PATH 1
 #define ARG_POS_WIDTH 2
@@ -67,10 +64,14 @@ int generate_valid_path(char *incomplete_path, const char *extension, char **res
  */
 int main(int argc, char **argv) {
     // TODO: free memory also in case of errors
-
-    if (strcmp(argv[ARG_POS_CONFIG_PATH], "-h") == 0 || strcmp(argv[ARG_POS_CONFIG_PATH], "--help") == 0) {
+    if (argc == 2 && (strcmp(argv[ARG_POS_CONFIG_PATH], "-h") == 0 || strcmp(argv[ARG_POS_CONFIG_PATH], "--help") == 0)) {
         print_help(argv[0]);
         return SUCCESS;
+    }
+
+    if (argc != EXPECTED_ARG_COUNT) {
+        print_error_message(ERROR_INVALID_NUM_CL_ARG);
+        return ERROR_INVALID_NUM_CL_ARG;
     }
 
     char *config_path = argv[ARG_POS_CONFIG_PATH];
@@ -95,17 +96,8 @@ int main(int argc, char **argv) {
         return status;
     }
 
-    // Calculate image size
-    ImageSize size;
-    status = viewport_to_image_size(config.viewport, image_width, &size);
-    if (status != SUCCESS) {
-        print_error_message(status);
-        return status;
-    }
-
-    // Allocate memory for image
-    unsigned char *p_image_data;
-    status = malloc_image_data(size, &p_image_data);
+    ImageData *p_image_data;
+    status = create_image_data(config.viewport, image_width, &p_image_data);
     if (status != SUCCESS) {
         print_error_message(status);
         return status;
@@ -113,7 +105,7 @@ int main(int argc, char **argv) {
 
     // Build image and print progress
     double build_time;
-    status = CPUTIME(build_image(size, config, p_image_data, &print_progress_bar), &build_time);
+    status = CPUTIME(render_to_image(config, p_image_data, &print_progress_bar), &build_time);
     if (status != SUCCESS) {
         print_error_message(status);
         return status;
@@ -126,14 +118,14 @@ int main(int argc, char **argv) {
         print_error_message(status);
         return status;
     }
-    status = export_and_free(p_image_data, size, output_path);
+    status = export_and_free(p_image_data, output_path);
     if (status != SUCCESS) {
         print_error_message(status);
         return status;
     }
 
     // Print info
-    print_info(config_path, output_path, size, config, build_time);
+    print_info(config_path, output_path, p_image_data->size, config, build_time);
 
     return SUCCESS;
 }
