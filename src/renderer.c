@@ -61,10 +61,11 @@ int _iteration_count(Complex c, size_t iteration_depth, size_t *p_iterations) {
         multiply(z, z, &z);
         add(z, c, &z);
         magnitude(z, &magnitude_z);
-        if (magnitude_z > ESCAPE_RADIUS) {
-            break;
-        }
         iteration_count++;
+        if (magnitude_z > ESCAPE_RADIUS) {
+            *p_iterations = iteration_count - 1;
+            return SUCCESS;
+        }
     }
 
     *p_iterations = iteration_count;
